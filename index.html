@@ -7,7 +7,7 @@
     <title>Users-github</title>
     <style>
         .users-container {
-            height: 660px;
+            height: 360px;
             width: 500px;
             margin: 40px;
             margin-top: 50px;
@@ -90,11 +90,11 @@
         All Users</h2>
     <div class="pagination">
         <!-- <a href="#" id="previous">&laquo;</a> -->
-        <a class="active" href="#">1</a>
+        <!-- <a class="active" href="#">1</a>
         <a href="#">2</a>
         <a href="#">3</a>
         <a href="#">4</a>
-        <a href="#">5</a>
+        <a href="#">5</a> -->
         <!-- <a href="#" id="next">&raquo;</a> -->
     </div>
     <div class="users-container">
@@ -105,14 +105,25 @@
         fetch("https://api.github.com/users").then(res =>
             res.json()
         ).then(res => {
-            let currentPagenumber = findPage();
             const allUsers = res
+            const usersLength=allUsers.length
+            const numOfPages=Math.ceil(usersLength/6);
             const usersContainer = document.querySelector(".users-container")
             const userDetailsContainer = document.querySelector(".user-details-container")
             const userDetailsText = document.querySelector(".userDetailsText")
+            for(i=1;i<=numOfPages;i++){
+                let pg=document.createElement("a")
+                pg.setAttribute("href","#");
+                if(i==1)
+                    pg.setAttribute("class","active")
+                pg.innerHTML=i;
+                pgDiv=document.querySelector(".pagination")
+                pgDiv.append(pg)
+            }
+            let currentPagenumber = findPage();
             reload(currentPagenumber);
             function reload(currentPagenumber) {
-                let currentPage = allUsers.slice((currentPagenumber - 1) * 12, currentPagenumber * 12)
+                let currentPage = allUsers.slice((currentPagenumber - 1) * 6, currentPagenumber * 6)
                 currentPage.forEach(userObject => {
                     let newDiv = document.createElement("div");
                     newDiv.innerHTML =
