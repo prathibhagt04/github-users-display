@@ -89,13 +89,13 @@
         style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;position: relative; margin-left: 40px;color: #0c0569;text-decoration: underline;">
         All Users</h2>
     <div class="pagination">
-        <a href="#">&laquo;</a>
+        <!-- <a href="#" id="previous">&laquo;</a> -->
         <a class="active" href="#">1</a>
         <a href="#">2</a>
         <a href="#">3</a>
         <a href="#">4</a>
         <a href="#">5</a>
-        <a href="#">&raquo;</a>
+        <!-- <a href="#" id="next">&raquo;</a> -->
     </div>
     <div class="users-container">
     </div>
@@ -139,6 +139,16 @@
             let pgVal = 1;
             document.querySelectorAll(".pagination a").forEach((pageNum) => {
                 pageNum.addEventListener("click", () => {
+                    // if(pageNum.getAttribute("id")=="previous"){
+                    //     const activeNow=document.querySelector(".pagination a.active");
+                    //     const getActiveNow=Number(activeNow.innerHTML);
+                    //     activeNow.removeAttribute("class");
+                    //     document.querySelectorAll(".pagination a").forEach((element)=>{
+                    //         if(Number(element.innerHTML)==(getActiveNow-1)){
+                    //             element.setAttribute("class","active")
+                    //         }
+                    //     })
+                    // }
                     document.querySelector(".pagination a.active").removeAttribute("class")
                     pageNum.setAttribute("class","active")
                     pgVal = Number(pageNum.innerHTML);
