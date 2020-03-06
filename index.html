@@ -7,15 +7,15 @@
     <title>Users-github</title>
     <style>
         .users-container {
-            float: left;
             height: 660px;
             width: 500px;
             margin: 40px;
-            margin-top: 60px;
+            margin-top: 50px;
             background-color: #bcf7e7;
             border: solid #4fc4c4 3px;
             display: flex;
             flex-wrap: wrap;
+            float: unset;
         }
 
         .users-container>div {
@@ -28,13 +28,11 @@
         }
 
         .user-details-container {
-            float: left;
             height: 350px;
             border: solid #c280c1 3px;
             width: 400px;
             margin: 40px;
-            margin-top:50px;
-            margin-left: 20px;
+            margin-top: 50px;
             background-color: #f5dcf7;
             display: none;
             padding: 10px;
@@ -44,60 +42,118 @@
             padding: 10px;
             font-family: Georgia, 'Times New Roman', Times, serif;
         }
-        .userDetailsText{
+
+        .userDetailsText {
             font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             font-size: x-large;
-            margin-top: 50px;
-            margin-left: 600px;
+            margin-top: 70px;
+            margin-left: 30px;
             text-decoration: underline;
             display: none;
         }
-        .user-details-container p{
+
+        .user-details-container p {
             font-size: large;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        .pagination {
+            margin-left: 50px;
+            position: absolute;
+            margin-top: -110px;
+            float: left
+        }
+
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            margin-top: 100px;
+            transition: background-color .3s;
+        }
+
+        .pagination a.active {
+            background-color: dodgerblue;
+            color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
         }
     </style>
 </head>
 
 <body>
     <h2
-        style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;position: absolute; margin-left: 40px;color: #0c0569;text-decoration: underline;">
+        style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;position: relative; margin-left: 40px;color: #0c0569;text-decoration: underline;">
         All Users</h2>
+    <div class="pagination">
+        <a href="#">&laquo;</a>
+        <a class="active" href="#">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">&raquo;</a>
+    </div>
     <div class="users-container">
     </div>
-    <span class="userDetailsText">User Details</span>
+    <div class="userDetailsText">User Details</div>
     <div class="user-details-container"></div>
     <script>
         fetch("https://api.github.com/users").then(res =>
             res.json()
         ).then(res => {
-            let allUsers = res;
-            let firstPage = allUsers.slice(0, 12);
+            let currentPagenumber = findPage();
+            const allUsers = res
             const usersContainer = document.querySelector(".users-container")
             const userDetailsContainer = document.querySelector(".user-details-container")
-            const userDetailsText=document.querySelector(".userDetailsText")
-            firstPage.forEach(userObject => {
-                let newDiv = document.createElement("div");
-                newDiv.innerHTML =
-                    `<h4 class="userdisp">${userObject.login}</h4>
+            const userDetailsText = document.querySelector(".userDetailsText")
+            reload(currentPagenumber);
+            function reload(currentPagenumber) {
+                let currentPage = allUsers.slice((currentPagenumber - 1) * 12, currentPagenumber * 12)
+                currentPage.forEach(userObject => {
+                    let newDiv = document.createElement("div");
+                    newDiv.innerHTML =
+                        `<h4 class="userdisp">${userObject.login}</h4>
                  <h4 class="userdisp">id : ${userObject.id}</h4>`;
-                newDiv.addEventListener("click", () => {
-                    fetch(`https://api.github.com/users/${userObject.login}`)
-                        .then(res=>res.json())
-                        .then(res => {
-                            userDetailsContainer.style.display="block";
-                            userDetailsText.style.display="block";
-                            userDetailsContainer.innerHTML =
-                                `<h2 style="text-align:center">${res.login}</h2>
+                    newDiv.addEventListener("click", () => {
+                        fetch(`https://api.github.com/users/${userObject.login}`)
+                            .then(res => res.json())
+                            .then(res => {
+                                userDetailsContainer.style.display = "block";
+                                userDetailsText.style.display = "block";
+                                userDetailsContainer.innerHTML =
+                                    `<h2 style="text-align:center">${res.login}</h2>
                         <p> id : ${res.id}</p>
                         <p> This account was created on : ${(res.created_at).substring(0, 10)}</p>
                         <p>Link to github account : <a href="${res.html_url}" taget="_blank">${res.html_url}</a></p>
                         `
-                        }).catch(err=>console.log(err))
+                            }).catch(err => console.log(err))
+                    })
+                    usersContainer.append(newDiv);
+                });
+            }
+            function findPage() {
+            let pgVal = 1;
+            document.querySelectorAll(".pagination a").forEach((pageNum) => {
+                pageNum.addEventListener("click", () => {
+                    document.querySelector(".pagination a.active").removeAttribute("class")
+                    pageNum.setAttribute("class","active")
+                    pgVal = Number(pageNum.innerHTML);
+                    document.querySelectorAll(".users-container div").forEach((element)=>{
+                        element.remove();
+                    })
+                    reload(pgVal);
+                    console.log(pgVal);
                 })
-                usersContainer.append(newDiv);
-            });
+            })
+            return pgVal
+        }
         }).catch(err => console.log(err))
+
+        
 
     </script>
 </body>
